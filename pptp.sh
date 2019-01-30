@@ -14,7 +14,7 @@ printf "
 ####################################################
 "
 apt-get update
-apt-get install pptpd
+apt-get install -y pptpd
 echo 1 > /proc/sys/net/ipv4/ip_forward 
 sed -i "13iiptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE"  /etc/rc.local
 sed -i "13i/etc/init.d/pptpd restart"  /etc/rc.local
