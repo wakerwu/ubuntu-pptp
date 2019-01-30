@@ -13,14 +13,8 @@ printf "
 #                                                  #
 ####################################################
 "
-vpsip=`ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk 'NR==1 { print $1}'`
 apt-get update
-apt-get --purge remove pptpd ppp
-rm -rf /etc/pptpd.conf
-rm -rf /etc/ppp
-apt-get install -y ppp
-apt-get install -y pptpd
-apt-get install -y iptables logrotate tar cpio perl
+apt-get install pptpd
 echo 1 > /proc/sys/net/ipv4/ip_forward 
 sed -i "13iiptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE"  /etc/rc.local
 sed -i "13i/etc/init.d/pptpd restart"  /etc/rc.local
@@ -29,20 +23,9 @@ echo "remoteip 11.0.0.100-200" >> /etc/pptpd.conf
 echo "ms-dns 8.8.8.8" >> /etc/ppp/options
 echo "ms-dns 8.8.4.4" >> /etc/ppp/options
 echo "wakerwu pptpd p19890202 *" >> /etc/ppp/chap-secrets
-echo ""
+echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+sysctl -p
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-iptables-save > /etc/iptables-rules
-printf "
-####################################################
-add my Yu
-####################################################
-"
-echo "pre-up iptables-restore < /etc/iptables-rules" >> /etc/network/interfaces
-printf "
-####################################################
-add my Yu
-####################################################
-"
 /etc/init.d/pptpd restart
 printf "
 ####################################################
@@ -55,8 +38,6 @@ printf "
 ####################################################
 username:wakerwu
 password:p19890202
-ServerIP:$vpsip
-
 ---------------------
 "
 
